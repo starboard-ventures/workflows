@@ -1,7 +1,7 @@
 on:
   workflow_call:
     inputs:
-      image_repo:
+      image_registry:
         required: true
         type: string
       image_tag:
@@ -54,8 +54,8 @@ jobs:
           aws_secret_access_key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
           aws_region: ${{ inputs.aws_region }}
           cluster_name: ${{ inputs.eks_cluster_name }}
-          IMAGE_REPO: ${{ inputs.image_repo }}
+          IMAGE_REGISTRY: ${{ inputs.image_registry }}
           IMAGE_TAG: ${{ inputs.image_tag }}
           PROJECT: ${{ inputs.project }}
         with:
-          args: bash cicd/charts/deploy-$PROJECT.sh
+          args: bash cicd/charts/deploy-$PROJECT.sh ${{ inputs.environment }}
