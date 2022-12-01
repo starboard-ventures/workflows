@@ -65,6 +65,7 @@ jobs:
 
       - name: Set image
         id: image
+        shell: bash
         run: |
           echo "image=${{ steps.repo.outputs.repo }}:${{ steps.tag.outputs.image_tag }}" >> $GITHUB_OUTPUT
 
