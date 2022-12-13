@@ -15,24 +15,20 @@ on:
         default: 'None'
         type: string
     outputs:
-      image_repo:
-        description: "The image repo"
-        value: ${{ jobs.build_and_push.outputs.image_repo }}
+      image_registry:
+        description: "The image registry"
+        value: ${{ jobs.build_and_push.outputs.image_registry }}
       image_tag:
         description: "The image tag"
         value: ${{ jobs.build_and_push.outputs.image_tag }}
-      image:
-        description: "The image full path"
-        value: ${{ jobs.build_and_push.outputs.image }}
 
 jobs:
   build_and_push:
     name: Build_and_Push
     runs-on: ubuntu-latest
     outputs:
-      image_repo: ${{ steps.repo.outputs.repo }}
+      image_registry: ${{ steps.login-ecr.outputs.registry }}
       image_tag: ${{ steps.tag.outputs.image_tag }}
-      image: ${{ steps.image.outputs.image }}
     steps:
       - name: Configure AWS credentials
         id: aws_credentials
@@ -57,18 +53,6 @@ jobs:
           echo "image_tag=$GITHUB_REF_NAME" >> $GITHUB_OUTPUT
           fi
 
-      - name: Set image repo
-        id: repo
-        shell: bash
-        run: |
-          echo "repo=${{ steps.login-ecr.outputs.registry }}/${{ inputs.image_repo_project }}" >> $GITHUB_OUTPUT
-
-      - name: Set image
-        id: image
-        shell: bash
-        run: |
-          echo "image=${{ steps.repo.outputs.repo }}:${{ steps.tag.outputs.image_tag }}" >> $GITHUB_OUTPUT
-
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -84,7 +68,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ steps.image.outputs.image }}
+          tags: ${{ steps.login-ecr.outputs.registry }}/${{ inputs.image_repo_project }}:${{ steps.tag.outputs.image_tag }}
 
       - name: Build with args and push
         if: ${{ inputs.build_args != 'None' }}
@@ -94,4 +78,4 @@ jobs:
           build-args: |
             ${{ inputs.build_args }}
           push: true
-          tags: ${{ steps.image.outputs.image }}
+          tags: ${{ steps.login-ecr.outputs.registry }}/${{ inputs.image_repo_project }}:${{ steps.tag.outputs.image_tag }}
