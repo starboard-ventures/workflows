@@ -15,9 +15,6 @@ on:
         default: 'None'
         type: string
     outputs:
-      image_registry:
-        description: "The image registry"
-        value: ${{ jobs.build_and_push.outputs.image_registry }}
       image_tag:
         description: "The image tag"
         value: ${{ jobs.build_and_push.outputs.image_tag }}
@@ -27,7 +24,6 @@ jobs:
     name: Build_and_Push
     runs-on: ubuntu-latest
     outputs:
-      image_registry: ${{ steps.login-ecr.outputs.registry }}
       image_tag: ${{ steps.tag.outputs.image_tag }}
     steps:
       - name: Configure AWS credentials
