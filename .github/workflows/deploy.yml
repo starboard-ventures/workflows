@@ -1,9 +1,6 @@
 on:
   workflow_call:
     inputs:
-      image_registry:
-        required: true
-        type: string
       image_tag:
         required: true
         type: string
@@ -22,6 +19,9 @@ on:
       aws_region:
         required: true
         type: string
+      aws_account_repository:
+        required: true
+        type: string
 
 jobs:
   Deploy:
@@ -31,14 +31,16 @@ jobs:
         id: aws_credentials
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
-          aws-access-key-id: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ inputs.environment == 'prod' && secrets.PROD_AWS_ACCESS_KEY_ID || secrets.DEV_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ inputs.environment == 'prod' && secrets.PROD_AWS_SECRET_ACCESS_KEY || secrets.DEV_AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.aws_region }}
           mask-aws-account-id: 'no'
 
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registries: "${{ inputs.aws_account_repository }}"
 
       - name: Checkout
         uses: actions/checkout@v3
@@ -50,11 +52,8 @@ jobs:
       - name: Deploy
         uses: ./cicd/actions/eks-action
         env:
-          aws_access_key_id: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
-          aws_region: ${{ inputs.aws_region }}
           cluster_name: ${{ inputs.eks_cluster_name }}
-          IMAGE_REGISTRY: ${{ inputs.image_registry }}
+          IMAGE_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ inputs.image_tag }}
           PROJECT: ${{ inputs.project }}
         with:
