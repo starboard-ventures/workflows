@@ -43,7 +43,7 @@ jobs:
           registries: "${{ inputs.aws_account_repository }}"
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: ${{ inputs.cicd_repo }}
           token: ${{ secrets.CICD_REPO_READ_TOKEN }}
