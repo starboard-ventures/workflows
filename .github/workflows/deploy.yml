@@ -46,7 +46,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ${{ inputs.cicd_repo }}
-          token: ${{ secrets.CICD_REPO_READ_TOKEN }}
+          token: ${{ secrets.CICD_REPO_READ_TOKEN_NEW }}
           path: cicd
 
       - name: Deploy
