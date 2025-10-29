@@ -47,6 +47,7 @@ jobs:
           repository: ${{ inputs.github_cicd_repo }}
           token: ${{ secrets.CICD_REPO_READ_TOKEN_NEW }}
           path: cicd
+          ref: v1.0.0
 
       - name: Deploy
         uses: ./cicd/actions/eks-action
