@@ -31,7 +31,8 @@ jobs:
         id: aws_credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ inputs.environment == 'prod' && secrets.PROD_ROLE_TO_ASSUME || secrets.DEV_ROLE_TO_ASSUME }}
+          #role-to-assume: ${{ inputs.environment == 'prod' && secrets.PROD_ROLE_TO_ASSUME || secrets.DEV_ROLE_TO_ASSUME }}
+          role-to-assume: ${{ secrets.PROD_ROLE_TO_ASSUME }}
           aws-region: ${{ inputs.aws_region }}
           mask-aws-account-id: true
 
